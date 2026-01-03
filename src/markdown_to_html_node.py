@@ -43,7 +43,7 @@ def format_text(text, tag):
         h_count = count_heading(text)
         return text[h_count + 1 :]
     if tag == "pre":
-        return text.split("```")[1]
+        return text.split("```")[1].strip()
     if tag == "p":
         lines = text.split("\n")
         return " ".join(lines)
