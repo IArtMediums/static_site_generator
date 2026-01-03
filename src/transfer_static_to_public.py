@@ -4,7 +4,7 @@ import shutil
 
 def prepare_directories():
     static_dir = "static"
-    public_dir = "public"
+    public_dir = "docs"
     if not os.path.exists(static_dir):
         print("static directory is missing")
         return
@@ -15,7 +15,7 @@ def prepare_directories():
 
 def copy_static_to_public(current_dir, current_public_dir=None):
     if not current_public_dir:
-        current_public_dir = "public"
+        current_public_dir = "docs"
         os.mkdir(current_public_dir)
     files_to_copy = os.listdir(current_dir)
     if len(files_to_copy) == 0:

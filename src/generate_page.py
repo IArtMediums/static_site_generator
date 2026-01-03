@@ -5,7 +5,7 @@ from extract_title import extract_title
 from markdown_to_html_node import markdown_to_html_node
 
 
-def generate_page_recursive(dir_path_content, template_path, dest_dir_path):
+def generate_page_recursive(dir_path_content, template_path, dest_dir_path, basepath):
     current_content_list = os.listdir(dir_path_content)
     if len(current_content_list) == 0:
         return
@@ -17,13 +17,13 @@ def generate_page_recursive(dir_path_content, template_path, dest_dir_path):
         if os.path.isfile(content_dir):
             html_file = dir.replace(".md", ".html")
             dest_html = os.path.join(current_dest_dir, html_file)
-            generate_page(content_dir, template_path, dest_html)
+            generate_page(content_dir, template_path, dest_html, basepath)
         else:
             os.mkdir(dest_dir)
-            generate_page_recursive(content_dir, template_path, dest_dir)
+            generate_page_recursive(content_dir, template_path, dest_dir, basepath)
 
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, basepath):
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
     with open(from_path, "r") as f:
         md = f.read()
@@ -34,6 +34,7 @@ def generate_page(from_path, template_path, dest_path):
     html = node.to_html()
     title = extract_title(md)
     generated_html = replace_placeholders(temp, html, title)
+    generated_html = update_base_path(generated_html, basepath)
     set_up_directory(dest_path)
     with open(dest_path, "w") as f:
         f.write(generated_html)
@@ -44,6 +45,13 @@ def replace_placeholders(template, content, title):
     content_pattern = r"{{ Content }}"
     temp_with_title = re.sub(title_pattern, title, template)
     return re.sub(content_pattern, content, temp_with_title)
+
+
+def update_base_path(html, basepath):
+    href_pattern = r'href="/'
+    src_pattern = r'src="/'
+    replaced_href = re.sub(href_pattern, f'href="{basepath}', html)
+    return re.sub(src_pattern, f'src="{basepath}', replaced_href)
 
 
 def set_up_directory(file_path):
